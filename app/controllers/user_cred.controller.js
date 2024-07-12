@@ -1,5 +1,6 @@
 const { user_cred_model } = require("../models/user_cred.model");
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const signup = async (req, res) => {
     try {
@@ -41,9 +42,11 @@ const signin = async (req, res) => {
         if (fetchData) {
             const checkPassword = bcrypt.compareSync(store.password, fetchData.password);
             if (checkPassword) {
+                const output = jwt.sign({ fetchData }, process.env.JWT_KEY);
                 return res.status(200).send({
                     message: 'Successully logged in',
                     user_data: fetchData.id,
+                    authToken: output,
                     status: 200
                 });
             } else {
